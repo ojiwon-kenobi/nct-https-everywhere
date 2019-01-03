@@ -1,0 +1,31 @@
+{
+
+  "manifest_version": 2,
+  "name": "Https Everywhere Checker",
+  "version": "1.0",
+
+  "description": "Nudges, checks, and tracks installation of HTTPS-everywhere",
+
+  "icons": {
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+
+  },
+  "permissions": [
+    "tabs",
+    "notifications",
+    "alarms",
+    "management",
+    "storage"],
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.mozilla.org/*"],
+      "js": ["core/checknudgetrack.js",
+        "core/content_script.js",
+        "core/settings-store.js",
+        "core/sound.js"]
+    }
+  ]
+
+}
