@@ -6,7 +6,6 @@
 //if not: nudge the user
         //record time on user store
 
-
 //related work: https://github.com/ghinda/nudgeti
 
 
@@ -14,7 +13,7 @@
 
 
 var https_everywhereID = "https-everywhere@eff.org"
-var userID= browser.management.get(----)
+var userID= browser.management.get(https_everywhereID)
 
 var https_everywherePromise = browser.management.get(https_everywhereID);
 function MakeQuerablePromise(promise) {
@@ -46,7 +45,6 @@ function updateSettings () {
     timeUpdate = settingsStore.get('times').append(Date.getTime())
     notifySound = parseFloat(settingsStore.get('sound'))
 }
-
 
 
 function nudge(userID) {
