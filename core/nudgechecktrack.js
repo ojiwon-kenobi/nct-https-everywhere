@@ -14,6 +14,7 @@
 
 
 var https_everywhereID = "https-everywhere@eff.org"
+var userID= browser.management.get(----)
 
 var https_everywherePromise = browser.management.get(https_everywhereID);
 function MakeQuerablePromise(promise) {
@@ -43,20 +44,22 @@ function MakeQuerablePromise(promise) {
 function updateSettings () {
     nudgeRepeat = parseInt(settingsStore.get('nudgeRepeat')) + 1
     timeUpdate = settingsStore.get('times').append(Date.getTime())
-    //notifySound = parseFloat(settingsStore.get('sound'))
-    //resetAlarm()
+    notifySound = parseFloat(settingsStore.get('sound'))
 }
 
 
 
-function nudge() {
+function nudge(userID) {
     browser.notifications.create({
         type: 'basic',
         title: 'HTTPS_everywhere checker',
+        message: settingsStore.get('messages')[hostID]
         //message: switch statement based on hostID
-    })
-    updateSettings()
-    settingsStore.change(updateSettings)
+    });
+    playSound(notifySound)
+    updateSettings();
+    settingsStore.change(updateSettings);
+
 }
 
 // function playSound (volume) {
@@ -71,15 +74,12 @@ function nudge() {
 
 
 
-
 if (MakeQuerablePromise(https_everywherePromise)) {//fulfilled
     console.log("HTTPS_everywhere has been installed.")
-
 }
 
 else {//rejected
-    nudge();
-    //playSound(notifySound);
+    nudge(userID);
 
 }
 

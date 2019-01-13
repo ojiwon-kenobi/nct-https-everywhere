@@ -4,8 +4,6 @@ var settingsStore= new Store('settings', {
     times: [
 
     ],
-
-
     messages:[
         //1= no commitment -->  4= soft commitment
         {id: '1', mssg: 'HTTPS-everywhere is ready for installation.'},
