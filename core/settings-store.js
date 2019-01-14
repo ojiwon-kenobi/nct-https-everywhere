@@ -1,9 +1,8 @@
-var settingsStore= new Store('settings', {
+var localStorage= new Storage('settings', {
     hostID: '',
     nudgeRepeat: '0',
-    times: [
-
-    ],
+    times: [],
+    period: [15, 60, 480, 1440],
     messages:[
         //1= no commitment -->  4= soft commitment
         {id: '1', mssg: 'HTTPS-everywhere is ready for installation.'},

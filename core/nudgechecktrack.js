@@ -6,16 +6,12 @@
 //if not: nudge the user
         //record time on user store
 
-//related work: https://github.com/ghinda/nudgeti
 
+var httpsEverywhereID = "https-everywhere@eff.org"
+var httpsEverywherePromise= browser.management.get(httpsEverywhereID)
+var uniqueID= localStorage.setItem('hostID', Math.random(300))
+var userID= uniqueID/ 4
 
-
-
-
-var https_everywhereID = "https-everywhere@eff.org"
-var userID= browser.management.get(https_everywhereID)
-
-var https_everywherePromise = browser.management.get(https_everywhereID);
 function MakeQuerablePromise(promise) {
     if(promise.isResolved)
         return promise;
@@ -40,46 +36,68 @@ function MakeQuerablePromise(promise) {
 
 }
 
-function updateSettings () {
-    nudgeRepeat = parseInt(settingsStore.get('nudgeRepeat')) + 1
-    timeUpdate = settingsStore.get('times').append(Date.getTime())
-    notifySound = parseFloat(settingsStore.get('sound'))
+function resetAlarm (userID) {
+    browser.alarms.clearAll()
+    browser.alarms.create({periodInMinutes: localStorage.getItem('period')})
 }
-
+//track = updateSettings
+function updateSettings () {
+    localStorage.setItem('nudgeRepeat', localStorage.get('nudgeRepeat') + 1)
+    localStorage.setItem('times', localStorage.getItem('times').append(Date.getTime()))
+}
 
 function nudge(userID) {
     browser.notifications.create({
         type: 'basic',
         title: 'HTTPS_everywhere checker',
-        message: settingsStore.get('messages')[hostID]
-        //message: switch statement based on hostID
+        message: localStorage.get('messages')[userID]
+        //message: switch statement based on userID
     });
-    playSound(notifySound)
+    playSound(5)
     updateSettings();
-    settingsStore.change(updateSettings);
+}
+function check(userID){
+    console.log(details.reason);
+    if (MakeQuerablePromise(httpsEverywherePromise)) {//fulfilled
+        console.log("HTTPS Everywhere has been installed.")
+        browser.alarms.clearAll() //effectively turn off the extension
+        updateSettings()
+    }
+
+    else {//rejected
+        nudge(userID);
+    }
+}
+
+function playSound (volume) {
+    if (volume === 0) {
+        return
+    }
+
+    var sound = new Audio(browser.extension.getURL('sounds/ping.wav'))
+    sound.volume = volume
+    sound.play()
+}
+
+
+function handleInstalled() {
+    Notification.requestPermission().then(function(result) {
+        if (result === 'denied') {
+            console.log('Permission wasn\'t granted. Allow a retry.');
+            return;
+        }
+        if (result === 'default') {
+            console.log('The permission request was dismissed.');
+            return;
+        }
+        resetAlarm(userID)
+        check(userID)
+    });
 
 }
 
-// function playSound (volume) {
-//     if (volume === 0) {
-//         return
-//     }
-//
-//     var sound = new Audio(browser.extension.getURL('sounds/sound.wav'))
-//     sound.volume = volume
-//     sound.play()
-// }
+handleInstalled();
 
-
-
-if (MakeQuerablePromise(https_everywherePromise)) {//fulfilled
-    console.log("HTTPS_everywhere has been installed.")
-}
-
-else {//rejected
-    nudge(userID);
-
-}
 
 
 
