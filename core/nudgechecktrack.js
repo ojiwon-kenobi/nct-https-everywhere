@@ -9,32 +9,53 @@
 
 var httpsEverywhereID = "https-everywhere@eff.org"
 var httpsEverywherePromise= browser.management.get(httpsEverywhereID)
-var uniqueID= localStorage.setItem('hostID', Math.random(300))
-var userID= uniqueID/ 4
+var uniqueClientID= localStorage.setItem('hostID', guid())
+var userID= uniqueClientID/ 4
 
 function MakeQuerablePromise(promise) {
-    if(promise.isResolved)
+    if (promise.isResolved)
         return promise;
-    var isPending= true;
-    var isRejected= false;
-    var isFulfilled= false;
+    var isPending = true;
+    var isRejected = false;
+    var isFulfilled = false;
 
-    var result = promise.then(function(v) {
-                isFulfilled=true;
-                isPending= false;
-                return v;
-    }, function(e) {
-        isRejected= true;
-        isPending= false;
+    var result = promise.then(function (v) {
+        isFulfilled = true;
+        isPending = false;
+        return v;
+    }, function (e) {
+        isRejected = true;
+        isPending = false;
         throw e;
     });
 
-        result.isFulfilled = function() { return isFulfilled; };
-        result.isPending = function() { return isPending; };
-        result.isRejected = function() { return isRejected; };
-        return result;
+    result.isFulfilled = function () {
+        return isFulfilled;
+    };
+    result.isPending = function () {
+        return isPending;
+    };
+    result.isRejected = function () {
+        return isRejected;
+    };
+    return result;
 
 }
+
+function guid() {
+
+    var nav = window.navigator;
+    var screen = window.screen;
+    var guid = nav.mimeTypes.length;
+    guid += nav.userAgent.replace(/\D+/g, '');
+    guid += nav.plugins.length;
+    guid += screen.height || '';
+    guid += screen.width || '';
+    guid += screen.pixelDepth || '';
+
+    return guid;
+};
+
 
 function resetAlarm (userID) {
     browser.alarms.clearAll()
