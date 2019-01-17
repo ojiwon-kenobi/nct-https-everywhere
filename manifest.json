@@ -22,6 +22,11 @@
       "js": ["core/nudgechecktrack.js",
         "core/settings-store.js"]
     }
-  ]
+  ],
 
+  "background": {
+    "scripts": [
+      ["background.js"]
+    ]
+  }
 }
