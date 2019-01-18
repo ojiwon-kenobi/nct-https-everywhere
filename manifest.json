@@ -16,17 +16,17 @@
     "management",
     "storage"],
 
-  "content_scripts": [
+//  "content_scripts": [
+//    {
+//      "matches": [
+//        "*://*.google.com/*"
+//      ]
+//    }
+//  ],
+  "background":
     {
-      "matches": ["*://*.mozilla.org/*"],
-      "js": ["core/nudgechecktrack.js",
+      "scripts": ["core/nudgechecktrack.js",
         "core/settings-store.js"]
     }
-  ],
 
-  "background": {
-    "scripts": [
-      ["background.js"]
-    ]
-  }
 }

@@ -1,16 +1,8 @@
 
-//check if https-everywhere exists:         https://stackoverflow.com/questions/3380452/can-you-get-a-list-of-firefox-add-ons-programmatically
-//                                          https://stackoverflow.com/questions/46727370/how-to-check-if-a-firefox-webextension-is-installed-or-not-with-page-javascript
-//if yes:
-        //record date of installation of extension
-//if not: nudge the user
-        //record time on user store
-
 
 var httpsEverywhereID = "https-everywhere@eff.org"
 var httpsEverywherePromise= browser.management.get(httpsEverywhereID)
-var uniqueClientID= localStorage.setItem('hostID', guid())
-var userID= uniqueClientID/ 4
+var userID= localStorage.getItem('hostID')/ 4
 
 function MakeQuerablePromise(promise) {
     if (promise.isResolved)
@@ -111,6 +103,7 @@ function handleInstalled() {
             console.log('The permission request was dismissed.');
             return;
         }
+        localStorage.setItem('hostID', guid())
         resetAlarm(userID)
         check(userID)
     });
