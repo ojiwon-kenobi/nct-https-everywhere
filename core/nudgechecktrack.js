@@ -105,9 +105,18 @@ function handleInstalled() {
         }
         localStorage.setItem('hostID', guid())
         resetAlarm(userID)
+        localStorage.setItem('nudgeRepeat', 0)
+        localStorage.setItem('times', [])
+        localStorage.setItem('period', [15, 60, 480, 1440])
+        localStorage.setItem('messages', [
+                        //1= no commitment -->  4= soft commitment
+                        'HTTPS-everywhere is ready for installation. Please click to install HTTPS-everywhere.', //toast
+                        'HTTPS-everywhere is ready for installation. When would you be like to be reminded by?', //toast
+                        'HTTPS-everywhere is ready for installation. Please click to install HTTPS-everywhere.', //require interaction
+                        'HTTPS-everywhere is ready for installation. When would you like to enable the browser extension?', //require interaction
+                    ])
         check(userID)
-    });
-
+     });
 }
 
 handleInstalled();

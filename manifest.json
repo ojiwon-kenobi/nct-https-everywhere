@@ -15,11 +15,11 @@
     "alarms",
     "management",
     "storage"],
-
+//
 //  "content_scripts": [
 //    {
 //      "matches": [
-//        "*://*.google.com/*"
+//        "https://www.mozilla.org/en-US/"
 //      ]
 //    }
 //  ],
