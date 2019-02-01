@@ -1,8 +1,10 @@
 
 
-var httpsEverywhereID = "https-everywhere@eff.org"
-var httpsEverywherePromise= browser.management.get(httpsEverywhereID)
-var userID= localStorage.getItem('hostID')/ 4
+var httpsEverywhereID = "https-everywhere-eff@eff.org";
+console.log("before promise");
+var httpsEverywherePromise= browser.management.get(httpsEverywhereID);
+console.log("past promise");
+var userID= localStorage.getItem('hostID')/ 4;
 
 function MakeQuerablePromise(promise) {
     if (promise.isResolved)
@@ -64,13 +66,12 @@ function nudge(userID) {
         type: 'basic',
         title: 'HTTPS_everywhere checker',
         message: localStorage.get('messages')[userID]
-        //message: switch statement based on userID
     });
     playSound(5)
     updateSettings();
 }
 function check(userID){
-    console.log(details.reason);
+    console.log('in check');
     if (MakeQuerablePromise(httpsEverywherePromise)) {//fulfilled
         console.log("HTTPS Everywhere has been installed.")
         browser.alarms.clearAll() //effectively turn off the extension
@@ -103,11 +104,12 @@ function handleInstalled() {
             console.log('The permission request was dismissed.');
             return;
         }
-        localStorage.setItem('hostID', guid())
-        resetAlarm(userID)
-        localStorage.setItem('nudgeRepeat', 0)
-        localStorage.setItem('times', [])
-        localStorage.setItem('period', [15, 60, 480, 1440])
+        localStorage.setItem('hostID', Client.id);
+        resetAlarm(userID);
+        console.log('reset alarm')
+        localStorage.setItem('nudgeRepeat', 0);
+        localStorage.setItem('times', []);
+        localStorage.setItem('period', [15, 60, 480, 1440]);
         localStorage.setItem('messages', [
                         //1= no commitment -->  4= soft commitment
                         'HTTPS-everywhere is ready for installation. Please click to install HTTPS-everywhere.', //toast
@@ -115,6 +117,7 @@ function handleInstalled() {
                         'HTTPS-everywhere is ready for installation. Please click to install HTTPS-everywhere.', //require interaction
                         'HTTPS-everywhere is ready for installation. When would you like to enable the browser extension?', //require interaction
                     ])
+        console.log('checking if user has h.e.');
         check(userID)
      });
 }
