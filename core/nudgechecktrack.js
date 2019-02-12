@@ -1,10 +1,9 @@
 
 
-var httpsEverywhereID = "https-everywhere-eff@eff.org";
-console.log("before promise");
-var httpsEverywherePromise= browser.management.get(httpsEverywhereID);
-console.log("past promise");
+var httpsEverywhereID = "https-everywhere@eff.org";
+// localStorage = Storage();
 var userID= localStorage.getItem('hostID')/ 4;
+var currentDate = new Date();
 
 function MakeQuerablePromise(promise) {
     if (promise.isResolved)
@@ -36,49 +35,37 @@ function MakeQuerablePromise(promise) {
 
 }
 
-function guid() {
-
-    var nav = window.navigator;
-    var screen = window.screen;
-    var guid = nav.mimeTypes.length;
-    guid += nav.userAgent.replace(/\D+/g, '');
-    guid += nav.plugins.length;
-    guid += screen.height || '';
-    guid += screen.width || '';
-    guid += screen.pixelDepth || '';
-
-    return guid;
-};
-
-
 function resetAlarm (userID) {
     browser.alarms.clearAll()
-    browser.alarms.create({periodInMinutes: localStorage.getItem('period')})
+    browser.alarms.create({periodInMinutes: localStorage.getItem('period')[userID]})
 }
 //track = updateSettings
 function updateSettings () {
-    localStorage.setItem('nudgeRepeat', localStorage.get('nudgeRepeat') + 1)
-    localStorage.setItem('times', localStorage.getItem('times').append(Date.getTime()))
+    localStorage.setItem('nudgeRepeat', localStorage.getItem('nudgeRepeat') + 1)
+    var ke = [localStorage.getItem('times')]
+    console.log(ke)
+    localStorage.setItem('times', ke.push(Date.now()))
 }
 
 function nudge(userID) {
     browser.notifications.create({
         type: 'basic',
         title: 'HTTPS_everywhere checker',
-        message: localStorage.get('messages')[userID]
+        message: localStorage.getItem('messages')[userID]
     });
     playSound(5)
     updateSettings();
 }
 function check(userID){
     console.log('in check');
-    if (MakeQuerablePromise(httpsEverywherePromise)) {//fulfilled
+
+    if (MakeQuerablePromise(browser.management.get(httpsEverywhereID)).isFulfilled) {//fulfilled
         console.log("HTTPS Everywhere has been installed.")
         browser.alarms.clearAll() //effectively turn off the extension
         updateSettings()
     }
 
-    else {//rejected
+    else {//rejected or pending = fulfilled is false
         nudge(userID);
     }
 }
@@ -102,13 +89,15 @@ function handleInstalled() {
         }
         if (result === 'default') {
             console.log('The permission request was dismissed.');
-            return;
         }
-        localStorage.setItem('hostID', Client.id);
+        // localStorage.setItem('hostID', Client.id); //experimental api
+        localStorage.setItem('hostID', 100);
         resetAlarm(userID);
         console.log('reset alarm')
         localStorage.setItem('nudgeRepeat', 0);
-        localStorage.setItem('times', []);
+        var dates= [Date.now()]
+        console.log(dates)
+        localStorage.setItem('times', dates);
         localStorage.setItem('period', [15, 60, 480, 1440]);
         localStorage.setItem('messages', [
                         //1= no commitment -->  4= soft commitment
