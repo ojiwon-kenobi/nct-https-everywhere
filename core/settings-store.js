@@ -11,3 +11,19 @@
 //     ],
 //     'sound': '0'
 // })
+
+// check notifications exist
+// if (browser["notifications"]) {
+//     console.log('Notifications exist!');
+//
+//     browser.notifications.create({
+//         "type": "basic",
+//         "iconUrl": browser.extension.getURL("icons/icon-48.png"),
+//         "title": "test",
+//         "message": "test"
+//     });
+// }
+// else {
+//     console.log('notifications do not exist');
+//     console.log(browser);
+// } //checkcheck

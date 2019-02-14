@@ -1,7 +1,6 @@
 
 
 var httpsEverywhereID = "https-everywhere@eff.org";
-// localStorage = Storage();
 var userID= localStorage.getItem('hostID')/ 4;
 var currentDate = new Date();
 
@@ -19,7 +18,7 @@ function MakeQuerablePromise(promise) {
     }, function (e) {
         isRejected = true;
         isPending = false;
-        throw e;
+        catch(e);
     });
 
     result.isFulfilled = function () {
@@ -53,32 +52,34 @@ function nudge(userID) {
         title: 'HTTPS_everywhere checker',
         message: localStorage.getItem('messages')[userID]
     });
-    playSound(5)
+    // playSound(5)
     updateSettings();
 }
 function check(userID){
-    console.log('in check');
-
-    if (MakeQuerablePromise(browser.management.get(httpsEverywhereID)).isFulfilled) {//fulfilled
-        console.log("HTTPS Everywhere has been installed.")
+    console.log('in check', browser.management.get(httpsEverywhereID));
+    console.log("fulfill?", MakeQuerablePromise(browser.management.get(httpsEverywhereID)).isFulfilled())
+    console.log("fail?", MakeQuerablePromise(browser.management.get(httpsEverywhereID)).isRejected())
+    console.log("pending?",MakeQuerablePromise(browser.management.get(httpsEverywhereID)).isPending())
+    if (MakeQuerablePromise(browser.management.get(httpsEverywhereID)).isFulfilled()) {//fulfilled
+        console.log( "HTTPS Everywhere has been installed.")
         browser.alarms.clearAll() //effectively turn off the extension
         updateSettings()
     }
 
-    else {//rejected or pending = fulfilled is false
+    else if (MakeQuerablePromise(browser.management.get(httpsEverywhereID)).isPending()) {//rejected or pending = fulfilled is false
         nudge(userID);
     }
 }
 
-function playSound (volume) {
-    if (volume === 0) {
-        return
-    }
-
-    var sound = new Audio(browser.extension.getURL('sounds/ping.wav'))
-    sound.volume = volume
-    sound.play()
-}
+// function playSound (volume) {
+//     if (volume === 0) {
+//         return
+//     }
+//
+//     var sound = new Audio(browser.extension.getURL('sounds/ping.wav'))
+//     sound.volume = volume
+//     sound.play()
+// }
 
 
 function handleInstalled() {
@@ -92,8 +93,6 @@ function handleInstalled() {
         }
         // localStorage.setItem('hostID', Client.id); //experimental api
         localStorage.setItem('hostID', 100);
-        resetAlarm(userID);
-        console.log('reset alarm')
         localStorage.setItem('nudgeRepeat', 0);
         var dates= [Date.now()]
         console.log(dates)
@@ -107,6 +106,8 @@ function handleInstalled() {
                         'HTTPS-everywhere is ready for installation. When would you like to enable the browser extension?', //require interaction
                     ])
         console.log('checking if user has h.e.');
+        resetAlarm(userID);
+
         check(userID)
      });
 }
