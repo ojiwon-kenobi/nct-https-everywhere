@@ -3,9 +3,7 @@
   "manifest_version": 2,
   "name": "Https Everywhere Checker",
   "version": "1.0",
-
   "description": "Nudges, checks, and tracks installation of HTTPS-everywhere",
-
   "icons": {
     "48": "images/icon.png"
   },
@@ -28,6 +26,8 @@
       "scripts": ["core/nudgechecktrack.js"
 //        "core/settings-store.js"]
         ]
-    }
-
+    },
+  "browser_action": {
+    "default_icon": "my-icon.png"
+  }
 }
