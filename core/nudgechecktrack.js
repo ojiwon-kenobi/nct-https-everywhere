@@ -13,13 +13,13 @@ function checkIfExtensionInstalled2(extensionID) {
                 if (err.message.includes("No such addon")) {
                     resolve(false);
                     console.log('nudge')
-                    nudge(userID);
+                    nudge(userID)
 
                 } else {
-                    reject(err);
                     browser.alarms.clearAll() //effectively turn off the extension
                     console.log('complete. update settings')
-                    updateSettings()
+                    reject(err);
+
                 }
             });
     });
@@ -30,22 +30,17 @@ function checkIfExtensionInstalled2(extensionID) {
 function updateSettings () {
     localStorage.setItem('nudgeRepeat', localStorage.getItem('nudgeRepeat') + 1)
     var ke = [localStorage.getItem('times')]
-    localStorage.setItem('times', ke.push(Date.now()))
+    localStorage.setItem('times', ke.push(JSON.parse(Date.now())))
 }
 
 function nudge(userID) {
     var noti = "Nudge for h_e"
-    var alarmTimeList = JSON.parse(localStorage.getItem('period'))
-    browser.alarms.create("", {periodInMinutes: alarmTimeList[0]})
-
-    browser.alarms.onAlarm.addListener(function(alarm) {
-        var meta = JSON.parse(localStorage.getItem("messages"))
-        browser.notifications.create(noti, {
-            "type": "basic",
-            // "iconUrl": browser.extension.getURL("icons/cake-96.png"),
-            "title": "HTTPS_everywhere installation time!!",
-            "message": meta[userID % 4]
-        });
+    var meta = JSON.parse(localStorage.getItem("messages"))
+    browser.notifications.create(noti, {
+        "type": "basic",
+        // "iconUrl": browser.extension.getURL("icons/cake-96.png"),
+        "title": "HTTPS_everywhere installation time!!",
+        "message": meta[userID % 4]
     });
 
     browser.browserAction.onClicked.addListener(()=> {
@@ -55,8 +50,10 @@ function nudge(userID) {
         });
     // playSound(5)
     });
-    updateSettings();
+    updateSettings()
+    console.log(localStorage.getItem("times"), localStorage.getItem("nudgeRepeat"))
 }
+
 
 function handleInstalled() {
     Notification.requestPermission().then(function(result) {
@@ -67,10 +64,11 @@ function handleInstalled() {
         if (result === 'default') {
             console.log('The permission request was dismissed.')
         }
+    });
         // localStorage.setItem('hostID', Client.id); //experimental api
         localStorage.setItem('hostID', 0)
         localStorage.setItem('nudgeRepeat', 0)
-        var dates= [Date.now()]
+        var dates= [JSON.stringify(Date.now())]
         localStorage.setItem('times', dates);
         localStorage.setItem('period', JSON.stringify([1, 60, 480, 1440]))
         var items = [JSON.stringify({0: 'HTTPS-everywhere is ready for installation. Please click to install HTTPS-everywhere.', //toast
@@ -78,10 +76,15 @@ function handleInstalled() {
             2 : 'HTTPS-everywhere is ready for installation. Please click to install HTTPS-everywhere.', //require interaction
             3 : 'HTTPS-everywhere is ready for installation. When would you like to enable the browser extension?'})] //require interaction
         localStorage.setItem("messages", items)
-        checkIfExtensionInstalled2(httpsEverywhereID).then(installed => {
-            console.log(`(2) extension is ${installed ? "" : "NOT "}installed`)
+
+
+        var alarmTimeList = JSON.parse(localStorage.getItem('period'))
+        browser.alarms.create("", {periodInMinutes: alarmTimeList[0]})
+        browser.alarms.onAlarm.addListener(function(alarm) {
+            checkIfExtensionInstalled2(httpsEverywhereID).then(installed => {
+                console.log(`(2) extension is ${installed ? "" : "NOT "}installed`)
+            });
         });
-    });
 }
 
 handleInstalled();
