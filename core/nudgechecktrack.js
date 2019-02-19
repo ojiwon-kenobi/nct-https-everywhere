@@ -12,12 +12,10 @@ function checkIfExtensionInstalled2(extensionID) {
             .catch(err => {
                 if (err.message.includes("No such addon")) {
                     resolve(false);
-                    console.log('nudge')
                     nudge(userID)
 
                 } else {
                     browser.alarms.clearAll() //effectively turn off the extension
-                    console.log('complete. update settings')
                     reject(err);
 
                 }
@@ -29,8 +27,10 @@ function checkIfExtensionInstalled2(extensionID) {
 //track = updateSettings
 function updateSettings () {
     localStorage.setItem('nudgeRepeat', localStorage.getItem('nudgeRepeat') + 1)
-    var ke = [localStorage.getItem('times')]
-    localStorage.setItem('times', ke.push(JSON.parse(Date.now())))
+    var ke = JSON.parse(localStorage.getItem('dates'))
+    ke.push(Date.now())
+    localStorage.setItem('dates', JSON.stringify(ke))
+    console.log(localStorage.getItem("dates"))
 }
 
 function nudge(userID) {
@@ -46,12 +46,10 @@ function nudge(userID) {
     browser.browserAction.onClicked.addListener(()=> {
         var clearing = browser.notifications.clear(cakeNotification);
         clearing.then(() => {
-            console.log("cleared");
         });
     // playSound(5)
     });
     updateSettings()
-    console.log(localStorage.getItem("times"), localStorage.getItem("nudgeRepeat"))
 }
 
 
@@ -68,8 +66,10 @@ function handleInstalled() {
         // localStorage.setItem('hostID', Client.id); //experimental api
         localStorage.setItem('hostID', 0)
         localStorage.setItem('nudgeRepeat', 0)
-        var dates= [JSON.stringify(Date.now())]
-        localStorage.setItem('times', dates);
+
+        var dates= [Date.now()]
+        localStorage.setItem('dates', JSON.stringify(dates));
+        console.log(localStorage.getItem('dates'))
         localStorage.setItem('period', JSON.stringify([1, 60, 480, 1440]))
         var items = [JSON.stringify({0: 'HTTPS-everywhere is ready for installation. Please click to install HTTPS-everywhere.', //toast
             1 : 'HTTPS-everywhere is ready for installation. When would you be like to be reminded by?', //toast
