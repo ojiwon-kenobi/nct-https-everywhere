@@ -3,6 +3,10 @@
 const httpsEverywhereID = "https-everywhere@eff.org"
 var userID= localStorage.getItem('hostID')/ 4
 var currentDate = new Date();
+const httpsEverywhereSite = "https://addons.mozilla.org/en-US/firefox/addon/https-everywhere/"
+var title = "HTTPS_everywhere installation time!!"
+
+
 
 function checkIfExtensionInstalled2(extensionID) {
     return new Promise((resolve, reject) => {
@@ -33,34 +37,52 @@ function updateSettings () {
     console.log(localStorage.getItem("dates"))
 }
 
+function onCreated(tab) {
+    console.log(`Created new tab: ${tab.id}`)
+}
+
+function onError(error) {
+    console.log(`Error: ${error}`);
+}
+
+
+
 function nudge(userID) {
     var noti = "Nudge for h_e"
     var meta = JSON.parse(localStorage.getItem("messages"))
     browser.notifications.create(noti, {
         "type": "basic",
-        // "iconUrl": browser.extension.getURL("icons/cake-96.png"),
         "title": "HTTPS_everywhere installation time!!",
         "message": meta[userID % 4]
     });
+    updateSettings();
 
-    browser.browserAction.onClicked.addListener(()=> {
-        var clearing = browser.notifications.clear(cakeNotification);
-        clearing.then(() => {
+    // setTimeout(noti.close.bind(noti), 10000);
+    browser.notifications.onClicked.addListener(function(notificationId) {
+        console.log('Notification ' + notificationId + ' was clicked by the user');
+        var creating = browser.tabs.create({
+            url: httpsEverywhereSite
         });
-    // playSound(5)
+        creating.then(onCreated, onError);
     });
-    updateSettings()
 }
+
 
 
 function handleInstalled() {
     Notification.requestPermission().then(function(result) {
+        console.log(result);
         if (result === 'denied') {
             console.log('Permission wasn\'t granted. Allow a retry.')
             return;
         }
         if (result === 'default') {
             console.log('The permission request was dismissed.')
+            return;
+        }
+        if (result === 'granted') {
+            console.log('The permission request was accepted.')
+
         }
     });
         // localStorage.setItem('hostID', Client.id); //experimental api
@@ -70,7 +92,7 @@ function handleInstalled() {
         var dates= [Date.now()]
         localStorage.setItem('dates', JSON.stringify(dates));
         console.log(localStorage.getItem('dates'))
-        localStorage.setItem('period', JSON.stringify([1, 60, 480, 1440]))
+        localStorage.setItem('period', JSON.stringify([0.2, 60, 480, 1440]))
         var items = [JSON.stringify({0: 'HTTPS-everywhere is ready for installation. Please click to install HTTPS-everywhere.', //toast
             1 : 'HTTPS-everywhere is ready for installation. When would you be like to be reminded by?', //toast
             2 : 'HTTPS-everywhere is ready for installation. Please click to install HTTPS-everywhere.', //require interaction
