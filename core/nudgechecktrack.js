@@ -81,12 +81,9 @@ function handle() {
         }
         if (res === 'default') {
             console.log('The permission request was dismissed.')
-
-            // return;
+            return;
         }
-
-
-        // localStorage.setItem('hostID', Client.id); //experimental api
+        //if res ==='granted'
         localStorage.setItem('hostID', 0)
         localStorage.setItem('nudgeRepeat', 0)
 

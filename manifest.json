@@ -13,18 +13,10 @@
     "alarms",
     "management",
     "storage"],
-//
-//  "content_scripts": [
-//    {
-//      "matches": [
-//        "https://www.mozilla.org/en-US/"
-//      ]
-//    }
-//  ],
+
   "background":
     {
       "scripts": ["core/nudgechecktrack.js"
-//        "core/settings-store.js"]
         ]
     },
   "browser_action": {
