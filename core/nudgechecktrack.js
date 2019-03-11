@@ -1,3 +1,5 @@
+//todos:
+// make this extension shut down as soon as the target extension has been downloaded
 
 
 const httpsEverywhereID = "https-everywhere@eff.org"
@@ -19,9 +21,9 @@ function checkIfExtensionInstalled2(extensionID) {
                     nudge(userID)
 
                 } else {
-                    browser.alarms.clearAll() //effectively turn off the extension
+                    browser.alarms.clearAll()
                     reject(err);
-
+                    return;
                 }
             });
     });
@@ -48,43 +50,33 @@ function onError(error) {
 
 
 function nudge(userID) {
-    var noti = "Nudge for h_e"
     var meta = JSON.parse(localStorage.getItem("messages"))
-    browser.notifications.create(noti, {
-        "type": "basic",
-        "title": "HTTPS_everywhere installation time!!",
-        "message": meta[userID % 4]
-    });
+    var text = meta[userID % 4]
+    console.log("nudging but no noti?")
+    var notification = new Notification('Click to download', { body: text, requireInteraction: true});
+    setTimeout(notification.close.bind(notification), 10000);
+    notification.onclick =  function (event) {
+        event.preventDefault(); // prevent the browser from focusing the Notification's tab
+        window.open(httpsEverywhereSite, '_blank');
+    }
     updateSettings();
-
-    // setTimeout(noti.close.bind(noti), 10000);
-    browser.notifications.onClicked.addListener(function(notificationId) {
-        console.log('Notification ' + notificationId + ' was clicked by the user');
-        var creating = browser.tabs.create({
-            url: httpsEverywhereSite
-        });
-        creating.then(onCreated, onError);
-    });
 }
 
 
-
-function handleInstalled() {
-    Notification.requestPermission().then(function(result) {
-        console.log(result);
-        if (result === 'denied') {
+function handle() {
+    window.Notification.requestPermission().then(function(res) {
+        console.log(res);
+        if (res === 'denied') {
             console.log('Permission wasn\'t granted. Allow a retry.')
             return;
         }
-        if (result === 'default') {
+        if (res === 'default') {
             console.log('The permission request was dismissed.')
-            return;
-        }
-        if (result === 'granted') {
-            console.log('The permission request was accepted.')
 
+            // return;
         }
-    });
+
+
         // localStorage.setItem('hostID', Client.id); //experimental api
         localStorage.setItem('hostID', 0)
         localStorage.setItem('nudgeRepeat', 0)
@@ -92,7 +84,7 @@ function handleInstalled() {
         var dates= [Date.now()]
         localStorage.setItem('dates', JSON.stringify(dates));
         console.log(localStorage.getItem('dates'))
-        localStorage.setItem('period', JSON.stringify([0.2, 60, 480, 1440]))
+        localStorage.setItem('period', JSON.stringify([0.5, 60, 480, 1440]))
         var items = [JSON.stringify({0: 'HTTPS-everywhere is ready for installation. Please click to install HTTPS-everywhere.', //toast
             1 : 'HTTPS-everywhere is ready for installation. When would you be like to be reminded by?', //toast
             2 : 'HTTPS-everywhere is ready for installation. Please click to install HTTPS-everywhere.', //require interaction
@@ -107,10 +99,10 @@ function handleInstalled() {
                 console.log(`(2) extension is ${installed ? "" : "NOT "}installed`)
             });
         });
+    });
 }
 
-handleInstalled();
 
-
+handle()
 
 
