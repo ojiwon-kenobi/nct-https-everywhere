@@ -64,7 +64,16 @@ function nudge(userID) {
 
 
 function handle() {
-    window.Notification.requestPermission().then(function(res) {
+    // Notification.requestPermission().then(function(permission) { console.log('permiss', permission)});
+    // Notification.requestPermission().then(function(getperm)
+    //
+    // {
+    //
+    //     console.log('permiss', getperm)
+    //
+    // });
+
+    Notification.requestPermission().then(function(res) {
         console.log(res);
         if (res === 'denied') {
             console.log('Permission wasn\'t granted. Allow a retry.')
@@ -100,6 +109,7 @@ function handle() {
             });
         });
     });
+
 }
 
 
